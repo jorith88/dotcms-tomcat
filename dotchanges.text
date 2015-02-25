@@ -1,0 +1,15 @@
+List of changes to the default tomcat configuration:
+
+    1. Modified /conf/server.xml
+        Commented the AJP connector
+        Modified the valve configuration
+    2. Added:
+        /bin/dotStartup.sh
+        /bin/dotStartup.bat
+        /bin/dotShutdown.sh
+        /bin/dotShutdown.bat
+        /bin/build.conf
+        /bin/build.conf.bat
+        .gitignore
+    3. Removed:
+        Content inside /webapps
