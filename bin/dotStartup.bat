@@ -62,6 +62,10 @@ if not ""%1"" == ""debug"" goto noDebug
 set JAVA_OPTS=-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8000 %JAVA_OPTS%
 :noDebug
 
+if not ""%2"" == ""profile"" goto noProfile
+set JAVA_OPTS=%JAVA_OPTS% -javaagent:%DOTCMS_HOME%/WEB-INF/profiler/profiler.jar
+:noProfile
+
 set "EXECUTABLE=%CATALINA_HOME%\bin\catalina.bat"
 
 rem Check that target executable exists

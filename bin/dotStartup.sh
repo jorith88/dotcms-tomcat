@@ -70,8 +70,9 @@ if [ "$1" = "debug" ] ; then
     JAVA_OPTS="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=$DEBUG_PORT $JAVA_OPTS"
 fi
 
-
-
+if [ "$2" = "profile" ] ; then
+    JAVA_OPTS="$JAVA_OPTS -javaagent:$DOTCMS_HOME/WEB-INF/profiler/profiler.jar"
+fi
 
 ## END Script CONFIGURATION Options
 
