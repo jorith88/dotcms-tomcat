@@ -11,5 +11,8 @@ List of changes to the default tomcat configuration:
         /bin/build.conf
         /bin/build.conf.bat
         .gitignore
+        /lib/ContextPropertyDecoder.jar
     3. Removed:
         Content inside /webapps
+	4. Modified /conf/cataline.properties
+		Added org.apache.tomcat.util.digester.PROPERTY_SOURCE=com.dotcms.tomcat.context.TomcatPropertyDecoder
