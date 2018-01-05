@@ -1,0 +1,22 @@
+List of changes to the default tomcat configuration:
+
+    1. Modified: 	
+	/conf/server.xml
+        	Commented the AJP connector
+        	Modified the valve configuration
+	/conf/cataline.properties
+		Added org.apache.tomcat.util.digester.PROPERTY_SOURCE=com.dotcms.tomcat.context.TomcatPropertyDecoder
+    
+
+    2. Added:
+        /bin/dotStartup.sh
+        /bin/dotStartup.bat
+        /bin/dotShutdown.sh
+        /bin/dotShutdown.bat
+        /bin/build.conf
+        /bin/build.conf.bat
+        .gitignore
+        /lib/ContextPropertyDecoder.jar
+    
+    3. Removed:
+        Content inside /webapps		
