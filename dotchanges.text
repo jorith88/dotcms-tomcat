@@ -26,9 +26,6 @@ List of changes to the default tomcat configuration:
 
 	/bin/build.conf
 		Change #SERVER_FOLDER=dotserver/tomcat-{new version of tomcat}
-		
-	/bin/dotStartup.sh	
-        Added JAVA_OPTS="$JAVA_OPTS --add-exports java.base/sun.net.www.protocol.jrt=ALL-UNNAMED"
-        
+		        
     /lib
     	Added javax.jws-api-1.1.jar    
