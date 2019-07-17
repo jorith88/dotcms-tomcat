@@ -38,6 +38,11 @@ DISTRIBUTION_HOME=`cd "$PRGDIR/.." ; pwd`
 TOMCAT_HOME=`cd "$PRGDIR/.." ; pwd`
 DOTCMS_HOME=`cd "$PRGDIR/../$HOME_FOLDER" ; pwd`
 
+#Setting default ES_ADMIN_PASSWORD if not set
+if [[ -z "${ES_ADMIN_PASSWORD}" ]]; then
+    ES_ADMIN_PASSWORD=admin
+fi
+
 ## Script CONFIGURATION Options
 
 
