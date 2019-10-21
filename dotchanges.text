@@ -19,6 +19,14 @@ List of changes to the default tomcat configuration:
         	Commented the AJP connector
         	Modified the valve configuration
 		Added to the Connector URIEncoding="UTF-8"
+
+    /conf/context.xml
+            Added exclusion in the JarScanner for the oracle driver
+            ```
+            <JarScanner>
+                <JarScanFilter tldSkip="${tomcat.util.scan.StandardJarScanFilter.jarsToSkip},ojdbc*.jar"/>
+            </JarScanner>
+            ```
 	
 	/conf/catalina.properties
 		Added org.apache.tomcat.util.digester.PROPERTY_SOURCE=com.dotcms.tomcat.context.TomcatPropertyDecoder
