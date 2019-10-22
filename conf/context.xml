@@ -27,11 +27,4 @@
     <!--
     <Manager pathname="" />
     -->
-
-    <!-- http://tomcat.apache.org/tomcat-8.0-doc/config/jar-scanner.html -->
-    <!-- http://tomcat.apache.org/tomcat-8.0-doc/config/jar-scan-filter.html -->
-    <JarScanner>
-        <JarScanFilter tldSkip="${tomcat.util.scan.StandardJarScanFilter.jarsToSkip},ojdbc*.jar"/>
-    </JarScanner>
-
 </Context>
