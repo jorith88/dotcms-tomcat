@@ -102,6 +102,28 @@ echo "Using DOTSERVER = $DOTSERVER"
 echo "Using CATALINA_PID = $CATALINA_PID"
 echo "Using JAVA_OPTS = $JAVA_OPTS"
 
+## check for open-distro arguments 
+BRING_DOWN_OPEN_DISTRO=true
+
+# idiomatic parameter and option handling in sh
+while test $# -gt 0
+do
+    case "$1" in
+        --skipOpendistro) 
+          BRING_DOWN_OPEN_DISTRO=false
+            ;;
+        --*) echo "bad option $1"
+            ;;
+    esac
+    shift
+done
+
+## Bring down Open Distro
+if [ "$BRING_DOWN_OPEN_DISTRO" = true ] ; then
+    docker stop dot_opendistro
+    docker container rm dot_opendistro
+fi
+
 if [ -z $1 ]; then
     CMD="stop 8"
 else
