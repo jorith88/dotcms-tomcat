@@ -94,8 +94,6 @@ set health_check=stopped
 rem let's check if there's an Open Distro running
 for /f %%i in ('curl "%ELASTICSEARCH_HOST%:%ELASTICSEARCH_PORT%/_cat/health?h=status" -u admin:admin --insecure') do set health_check=%%i
 
-echo %health_check%
-
 if "%health_check%"=="yellow" (
   set OPEN_DISTRO_ALREADY_RUNNING=true
 )
@@ -116,7 +114,7 @@ if "%OPEN_DISTRO_ALREADY_RUNNING%"=="false" (
 		)
 	)
 
-	echo Launching Open Distro? = "!LAUNCH_OPEN_DISTRO!"
+	echo Launching Open Distro? = !LAUNCH_OPEN_DISTRO!
 
 	if "!LAUNCH_OPEN_DISTRO!"=="true" (
 		rem Launching Open Distro...
@@ -126,7 +124,7 @@ if "%OPEN_DISTRO_ALREADY_RUNNING%"=="false" (
 		for /f %%i in ('curl "%ELASTICSEARCH_HOST%:%ELASTICSEARCH_PORT%/_cat/health?h=status" -u admin:admin --insecure') do set health_check=%%i
 		IF "!health_check!"=="yellow" GOTO LoopEnd
 		IF "!health_check!"=="green" GOTO LoopEnd
-		REM Elastic Search is unavailable - waiting
+		echo Elastic Search is unavailable - waiting
 		TIMEOUT 15
 		GOTO LoopStart
 		:LoopEnd
@@ -136,7 +134,7 @@ if "%OPEN_DISTRO_ALREADY_RUNNING%"=="false" (
 
 rem Executing Tomcat
 cd %CATALINA_HOME%\bin
-rem call "%EXECUTABLE%" start %CMD_LINE_ARGS%
+call "%EXECUTABLE%" start %CMD_LINE_ARGS%
 cd "%CURRENT_DIR%"
 
 :end

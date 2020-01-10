@@ -70,6 +70,29 @@ shift
 goto setArgs
 :doneSetArgs
 
+rem Bring down Open Distro
+setlocal enabledelayedexpansion
+set BRING_DOWN_OPEN_DISTRO=true
+
+rem check for open-distro arguments 
+for %%x in (%*) do (
+	echo %%~x
+	if "%%x"=="--skipOpendistro" (
+		echo skipping open distro
+		set BRING_DOWN_OPEN_DISTRO=false
+	)
+)
+
+echo !BRING_DOWN_OPEN_DISTRO!
+
+if "!BRING_DOWN_OPEN_DISTRO!"=="true" (
+	echo Bringing down Open Distro
+	docker stop dot_opendistro
+    docker container rm dot_opendistro
+)
+
+
+
 cd %CATALINA_HOME%\bin
 call "%EXECUTABLE%" stop %CMD_LINE_ARGS%
 cd "%CURRENT_DIR%"
