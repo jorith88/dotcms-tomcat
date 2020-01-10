@@ -120,6 +120,7 @@ done
 
 ## Bring down Open Distro
 if [ "$BRING_DOWN_OPEN_DISTRO" = true ] ; then
+    echo "Bringin down Open Distro"
     docker stop dot_opendistro
     docker container rm dot_opendistro
 fi
