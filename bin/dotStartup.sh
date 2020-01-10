@@ -37,9 +37,6 @@ fi
 DISTRIBUTION_HOME=`cd "$PRGDIR/.." ; pwd`
 TOMCAT_HOME=`cd "$PRGDIR/.." ; pwd`
 DOTCMS_HOME=`cd "$PRGDIR/../$HOME_FOLDER" ; pwd`
-ELASTICSEARCH_HOST=https://127.0.0.1
-ELASTICSEARCH_PORT=9200
-
 
 ## Script CONFIGURATION Options
 
@@ -128,16 +125,20 @@ your dotCMS application."
 fi
 
 # Code for bringing Open Distro up if needed/specified
-open_distro_already_running=false
+OPEN_DISTRO_HOST=https://127.0.0.1
+OPEN_DISTRO_PORT=9200
+OPEN_DISTRO_ALREADY_RUNNING=false
+OPEN_DISTRO_USER=admin
+OPEN_DISTRO_PASSWORD=admin
 
-health_check="$(curl "$ELASTICSEARCH_HOST:$ELASTICSEARCH_PORT/_cat/health?h=status" -u admin:admin --insecure)"
+health_check="$(curl "$OPEN_DISTRO_HOST:$OPEN_DISTRO_PORT/_cat/health?h=status" -u $OPEN_DISTRO_USER:$OPEN_DISTRO_PASSWORD --insecure)"
 if [ "$health_check" = 'yellow' ] || [ "$health_check" = 'green' ]; then
-  open_distro_already_running=true;
+  OPEN_DISTRO_ALREADY_RUNNING=true;
 fi
 
-echo "Is Open Distro already running? = $open_distro_already_running"
+echo "Is Open Distro already running? = $OPEN_DISTRO_ALREADY_RUNNING"
 
-if [ "$open_distro_already_running" = false ] ; then
+if [ "$OPEN_DISTRO_ALREADY_RUNNING" = false ] ; then
 
     ## check for open-distro arguments 
     LAUNCH_OPEN_DISTRO=true
@@ -160,16 +161,16 @@ if [ "$open_distro_already_running" = false ] ; then
 
     if [ "$LAUNCH_OPEN_DISTRO" = true ] ; then
         ## Bring up Open Distro
-        docker run -d --name dot_opendistro -e PROVIDER_ELASTICSEARCH_HEAP_SIZE=1500m -e PROVIDER_ELASTICSEARCH_DNSNAMES=elasticsearch -e ES_ADMIN_PASSWORD=admin -e discovery.type=single-node -p $ELASTICSEARCH_PORT:9200 gcr.io/cicd-246518/es-open-distro:1.2.0
+        docker run -d --name dot_opendistro -e PROVIDER_ELASTICSEARCH_HEAP_SIZE=1500m -e PROVIDER_ELASTICSEARCH_DNSNAMES=elasticsearch -e ES_ADMIN_PASSWORD=$OPEN_DISTRO_PASSWORD -e discovery.type=single-node -p $OPEN_DISTRO_PORT:9200 gcr.io/cicd-246518/es-open-distro:1.2.0
         # Cleaning up
         ##docker-compose -f "$TOMCAT_HOME"/bin/"open-distro-docker-compose.yml" down
 
         # Wait for heathy ElasticSearch
         # next wait for ES status to turn to Green or Yellow
-        health_check="$(curl "$ELASTICSEARCH_HOST:$ELASTICSEARCH_PORT/_cat/health?h=status" -u admin:admin --insecure)"
+        health_check="$(curl "$OPEN_DISTRO_HOST:$OPEN_DISTRO_PORT/_cat/health?h=status" -u $OPEN_DISTRO_USER:$OPEN_DISTRO_PASSWORD --insecure)"
 
         until ([ "$health_check" = 'yellow' ] || [ "$health_check" = 'green' ]); do
-            health_check="$(curl "$ELASTICSEARCH_HOST:$ELASTICSEARCH_PORT/_cat/health?h=status" -u admin:admin --insecure)"
+            health_check="$(curl "$OPEN_DISTRO_HOST:$OPEN_DISTRO_PORT/_cat/health?h=status" -u $OPEN_DISTRO_USER:$OPEN_DISTRO_PASSWORD --insecure)"
             >&2 echo "Elastic Search is unavailable - waiting"
             sleep 15
         done
