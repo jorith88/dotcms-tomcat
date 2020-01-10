@@ -38,6 +38,7 @@ DISTRIBUTION_HOME=`cd "$PRGDIR/.." ; pwd`
 TOMCAT_HOME=`cd "$PRGDIR/.." ; pwd`
 DOTCMS_HOME=`cd "$PRGDIR/../$HOME_FOLDER" ; pwd`
 ELASTICSEARCH_HOST=https://127.0.0.1
+ELASTICSEARCH_PORT=9200
 
 
 ## Script CONFIGURATION Options
@@ -126,26 +127,10 @@ your dotCMS application."
         fi
 fi
 
-## check for open-distro arguments 
-LAUNCH_OPEN_DISTRO=true
-
-# idiomatic parameter and option handling in sh
-while test $# -gt 0
-do
-    case "$1" in
-        --skipOpendistro) 
-          echo "option 1"
-          LAUNCH_OPEN_DISTRO=false
-            ;;
-        --*) echo "bad option $1"
-            ;;
-    esac
-    shift
-done
-
+# Code for bringing Open Distro up if needed/specified
 open_distro_already_running=false
 
-health_check="$(curl "$ELASTICSEARCH_HOST:19200/_cat/health?h=status" -u admin:admin --insecure)"
+health_check="$(curl "$ELASTICSEARCH_HOST:$ELASTICSEARCH_PORT/_cat/health?h=status" -u admin:admin --insecure)"
 if [ "$health_check" = 'yellow' ] || [ "$health_check" = 'green' ]; then
   open_distro_already_running=true;
 fi
@@ -154,26 +139,43 @@ echo "Is Open Distro already running? = $open_distro_already_running"
 
 if [ "$open_distro_already_running" = false ] ; then
 
+    ## check for open-distro arguments 
+    LAUNCH_OPEN_DISTRO=true
+
+    # idiomatic parameter and option handling in sh
+    while test $# -gt 0
+    do
+        case "$1" in
+            --skipOpendistro) 
+              echo "option 1"
+              LAUNCH_OPEN_DISTRO=false
+                ;;
+            --*) echo "bad option $1"
+                ;;
+        esac
+        shift
+    done
+
     echo "Launching Open Distro? = $LAUNCH_OPEN_DISTRO"
 
     if [ "$LAUNCH_OPEN_DISTRO" = true ] ; then
         ## Bring up Open Distro
-        docker run -d --name dot_opendistro -e PROVIDER_ELASTICSEARCH_HEAP_SIZE=1500m -e PROVIDER_ELASTICSEARCH_DNSNAMES=elasticsearch -e ES_ADMIN_PASSWORD=admin -e discovery.type=single-node -p 19200:9200 gcr.io/cicd-246518/es-open-distro:1.2.0
+        docker run -d --name dot_opendistro -e PROVIDER_ELASTICSEARCH_HEAP_SIZE=1500m -e PROVIDER_ELASTICSEARCH_DNSNAMES=elasticsearch -e ES_ADMIN_PASSWORD=admin -e discovery.type=single-node -p $ELASTICSEARCH_PORT:9200 gcr.io/cicd-246518/es-open-distro:1.2.0
         # Cleaning up
         ##docker-compose -f "$TOMCAT_HOME"/bin/"open-distro-docker-compose.yml" down
+
+        # Wait for heathy ElasticSearch
+        # next wait for ES status to turn to Green or Yellow
+        health_check="$(curl "$ELASTICSEARCH_HOST:$ELASTICSEARCH_PORT/_cat/health?h=status" -u admin:admin --insecure)"
+
+        until ([ "$health_check" = 'yellow' ] || [ "$health_check" = 'green' ]); do
+            health_check="$(curl "$ELASTICSEARCH_HOST:$ELASTICSEARCH_PORT/_cat/health?h=status" -u admin:admin --insecure)"
+            >&2 echo "Elastic Search is unavailable - waiting"
+            sleep 15
+        done
+
+        ## Open Distro ready
     fi
-
-    # Wait for heathy ElasticSearch
-    # next wait for ES status to turn to Green
-    health_check="$(curl "$ELASTICSEARCH_HOST:19200/_cat/health?h=status" -u admin:admin --insecure)"
-
-    until ([ "$health_check" = 'yellow' ] || [ "$health_check" = 'green' ]); do
-        health_check="$(curl "$ELASTICSEARCH_HOST:19200/_cat/health?h=status" -u admin:admin --insecure)"
-        >&2 echo "Elastic Search is unavailable - waiting"
-        sleep 15
-    done
-
-    ## Open Distro ready
 fi
 
 echo "Using DOTCMS_HOME = $DOTCMS_HOME"

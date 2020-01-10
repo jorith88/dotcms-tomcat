@@ -82,9 +82,61 @@ shift
 goto setArgs
 :doneSetArgs
 
+rem Code for bringing Open Distro up if needed/specified
+setlocal enabledelayedexpansion
+
+set ELASTICSEARCH_HOST=https://localhost
+set ELASTICSEARCH_PORT=9200
+set LAUNCH_OPEN_DISTRO=true
+set OPEN_DISTRO_ALREADY_RUNNING=false
+set health_check=stopped
+
+rem let's check if there's an Open Distro running
+for /f %%i in ('curl "%ELASTICSEARCH_HOST%:%ELASTICSEARCH_PORT%/_cat/health?h=status" -u admin:admin --insecure') do set health_check=%%i
+
+echo %health_check%
+
+if "%health_check%"=="yellow" (
+  set OPEN_DISTRO_ALREADY_RUNNING=true
+)
+
+if "%health_check%"=="green" (
+  set OPEN_DISTRO_ALREADY_RUNNING=true
+)
+
+echo Is Open Distro already running? = %OPEN_DISTRO_ALREADY_RUNNING%
+
+if "%OPEN_DISTRO_ALREADY_RUNNING%"=="false" (
+	rem check for open-distro arguments 
+	for %%x in (%*) do (
+		echo %%~x
+		if "%%x"=="--skipOpendistro" (
+			echo skipping open distro
+			set LAUNCH_OPEN_DISTRO=false
+		)
+	)
+
+	echo Launching Open Distro? = "!LAUNCH_OPEN_DISTRO!"
+
+	if "!LAUNCH_OPEN_DISTRO!"=="true" (
+		rem Launching Open Distro...
+		docker run -d --name dot_opendistro -e PROVIDER_ELASTICSEARCH_HEAP_SIZE=1500m -e PROVIDER_ELASTICSEARCH_DNSNAMES=elasticsearch -e ES_ADMIN_PASSWORD=admin -e discovery.type=single-node -p 9200:9200 gcr.io/cicd-246518/es-open-distro:1.2.0
+		rem let's get the health of Open Distro after starting it up
+		:LoopStart
+		for /f %%i in ('curl "%ELASTICSEARCH_HOST%:%ELASTICSEARCH_PORT%/_cat/health?h=status" -u admin:admin --insecure') do set health_check=%%i
+		IF "!health_check!"=="yellow" GOTO LoopEnd
+		IF "!health_check!"=="green" GOTO LoopEnd
+		REM Elastic Search is unavailable - waiting
+		TIMEOUT 15
+		GOTO LoopStart
+		:LoopEnd
+		rem Waiting for Open Distro over 
+	)
+)
+
 rem Executing Tomcat
 cd %CATALINA_HOME%\bin
-call "%EXECUTABLE%" start %CMD_LINE_ARGS%
+rem call "%EXECUTABLE%" start %CMD_LINE_ARGS%
 cd "%CURRENT_DIR%"
 
 :end
