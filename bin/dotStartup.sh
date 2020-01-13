@@ -124,46 +124,47 @@ your dotCMS application."
         fi
 fi
 
-# Code for bringing Open Distro up if needed/specified
-OPEN_DISTRO_HOST=https://127.0.0.1
-OPEN_DISTRO_PORT=9200
-OPEN_DISTRO_ALREADY_RUNNING=false
-OPEN_DISTRO_USER=admin
-OPEN_DISTRO_PASSWORD=admin
+## check for open-distro arguments 
+SKIP_OPEN_DISTRO=false
 
-health_check="$(curl "$OPEN_DISTRO_HOST:$OPEN_DISTRO_PORT/_cat/health?h=status" -u $OPEN_DISTRO_USER:$OPEN_DISTRO_PASSWORD --insecure)"
-if [ "$health_check" = 'yellow' ] || [ "$health_check" = 'green' ]; then
-  OPEN_DISTRO_ALREADY_RUNNING=true;
-fi
+for o in "$@"; do
+  if [ $o = "--skipOpendistro" ]; then
+    SKIP_OPEN_DISTRO=true
+    echo "Not launching Open Distro"
+    break
+  fi
+done
 
-echo "Is Open Distro already running? = $OPEN_DISTRO_ALREADY_RUNNING"
+if [ "$SKIP_OPEN_DISTRO" = false ] ; then
 
-if [ "$OPEN_DISTRO_ALREADY_RUNNING" = false ] ; then
+    # Code for bringing Open Distro up if needed/specified
+    OPEN_DISTRO_HOST=https://127.0.0.1
+    OPEN_DISTRO_PORT=9200
+    OPEN_DISTRO_ALREADY_RUNNING=false
+    OPEN_DISTRO_USER=admin
+    OPEN_DISTRO_PASSWORD=admin
+    OPEN_DISTRO_FAILED_DOCKER_MESSAGE="Unable to start the Elasticsearch docker container, please make sure you either start Elasticseach before you start dotCMS or have docker available so dotCMS can start the Elasticseach docker container"
 
-    ## check for open-distro arguments 
-    LAUNCH_OPEN_DISTRO=true
+    echo "Launching Open Distro..."
 
-    # idiomatic parameter and option handling in sh
-    while test $# -gt 0
-    do
-        case "$1" in
-            --skipOpendistro) 
-              echo "option 1"
-              LAUNCH_OPEN_DISTRO=false
-                ;;
-            --*) echo "bad option $1"
-                ;;
-        esac
-        shift
-    done
+    health_check="$(curl "$OPEN_DISTRO_HOST:$OPEN_DISTRO_PORT/_cat/health?h=status" -u $OPEN_DISTRO_USER:$OPEN_DISTRO_PASSWORD --insecure)"
+    if [ "$health_check" = 'yellow' ] || [ "$health_check" = 'green' ]; then
+      OPEN_DISTRO_ALREADY_RUNNING=true;
+    fi
 
-    echo "Launching Open Distro? = $LAUNCH_OPEN_DISTRO"
+    echo "Is Open Distro already running? = $OPEN_DISTRO_ALREADY_RUNNING"
 
-    if [ "$LAUNCH_OPEN_DISTRO" = true ] ; then
+    if [ "$OPEN_DISTRO_ALREADY_RUNNING" = false ] ; then
         ## Bring up Open Distro
         docker run -d --name dot_opendistro -e PROVIDER_ELASTICSEARCH_HEAP_SIZE=1500m -e PROVIDER_ELASTICSEARCH_DNSNAMES=elasticsearch -e ES_ADMIN_PASSWORD=$OPEN_DISTRO_PASSWORD -e discovery.type=single-node -p $OPEN_DISTRO_PORT:9200 gcr.io/cicd-246518/es-open-distro:1.2.0
-        # Cleaning up
-        ##docker-compose -f "$TOMCAT_HOME"/bin/"open-distro-docker-compose.yml" down
+         ## Let's check the exit code of docker run
+        docker_exit_code="$(echo $?)"
+        echo "$docker_exit_code"
+        if [ "$docker_exit_code" -gt 0 ] ; then 
+            echo 
+            echo "\033[1m$OPEN_DISTRO_FAILED_DOCKER_MESSAGE\033[0m"
+            echo
+        fi
 
         # Wait for heathy ElasticSearch
         # next wait for ES status to turn to Green or Yellow
@@ -176,7 +177,9 @@ if [ "$OPEN_DISTRO_ALREADY_RUNNING" = false ] ; then
         done
 
         ## Open Distro ready
+        echo "Open Distro ready!"
     fi
+
 fi
 
 echo "Using DOTCMS_HOME = $DOTCMS_HOME"
