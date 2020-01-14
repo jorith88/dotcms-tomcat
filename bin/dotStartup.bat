@@ -108,7 +108,7 @@ set health_check=stopped
 if "!SKIP_OPEN_DISTRO!"=="false" (
 
 	rem let's check if there's an Open Distro running
-	for /f %%i in ('curl "%ELASTICSEARCH_HOST%:%ELASTICSEARCH_PORT%/_cat/health?h=status" -u %OPEN_DISTRO_USER%:%OPEN_DISTRO_PASSWORD% --insecure') do set health_check=%%i
+	for /f %%i in ('%~dp0/curl-7.68.0-win64/bin/curl "%ELASTICSEARCH_HOST%:%ELASTICSEARCH_PORT%/_cat/health?h=status" -u %OPEN_DISTRO_USER%:%OPEN_DISTRO_PASSWORD% --insecure') do set health_check=%%i
 
 	if "%health_check%"=="yellow" (
 	  set OPEN_DISTRO_ALREADY_RUNNING=true
@@ -136,7 +136,7 @@ if "!SKIP_OPEN_DISTRO!"=="false" (
 
 		rem let's get the health of Open Distro after starting it up
 		:LoopStart
-		for /f %%i in ('curl "%ELASTICSEARCH_HOST%:%ELASTICSEARCH_PORT%/_cat/health?h=status" -u %OPEN_DISTRO_USER%:%OPEN_DISTRO_PASSWORD% --insecure') do set health_check=%%i
+		for /f %%i in ('%~dp0/curl-7.68.0-win64/bin/curl "%ELASTICSEARCH_HOST%:%ELASTICSEARCH_PORT%/_cat/health?h=status" -u %OPEN_DISTRO_USER%:%OPEN_DISTRO_PASSWORD% --insecure') do set health_check=%%i
 		IF "!health_check!"=="yellow" GOTO LoopEnd
 		IF "!health_check!"=="green" GOTO LoopEnd
 		echo Elastic Search is unavailable - waiting
