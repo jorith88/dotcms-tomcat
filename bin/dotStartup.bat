@@ -82,6 +82,73 @@ shift
 goto setArgs
 :doneSetArgs
 
+setlocal enabledelayedexpansion
+set SKIP_OPEN_DISTRO=false
+
+rem check for open-distro arguments 
+for %%x in (%*) do (
+	echo %%~x
+	if "%%x"=="--skipOpendistro" (
+		echo skipping open distro
+		set SKIP_OPEN_DISTRO=true
+	)
+)
+
+rem Code for bringing Open Distro up if needed/specified
+set ELASTICSEARCH_HOST=https://localhost
+set ELASTICSEARCH_PORT=9200
+set LAUNCH_OPEN_DISTRO=true
+set OPEN_DISTRO_ALREADY_RUNNING=false
+set OPEN_DISTRO_USER=admin
+set OPEN_DISTRO_PASSWORD=admin
+set OPEN_DISTRO_FAILED_DOCKER_MESSAGE=Unable to start the Elasticsearch docker container, please make sure you either start Elasticseach before you start dotCMS or have docker available so dotCMS can start the Elasticseach docker container
+set health_check=stopped
+
+
+if "!SKIP_OPEN_DISTRO!"=="false" (
+
+	rem let's check if there's an Open Distro running
+	for /f %%i in ('%~dp0/curl-7.68.0-win64/bin/curl "%ELASTICSEARCH_HOST%:%ELASTICSEARCH_PORT%/_cat/health?h=status" -u %OPEN_DISTRO_USER%:%OPEN_DISTRO_PASSWORD% --insecure') do set health_check=%%i
+
+	if "%health_check%"=="yellow" (
+	  set OPEN_DISTRO_ALREADY_RUNNING=true
+	)
+
+	if "%health_check%"=="green" (
+	  set OPEN_DISTRO_ALREADY_RUNNING=true
+	)
+
+	echo Is Open Distro already running? = %OPEN_DISTRO_ALREADY_RUNNING%
+
+	if "%OPEN_DISTRO_ALREADY_RUNNING%"=="false" (
+		
+		echo Launching Open Distro...
+
+		rem Launching Open Distro...
+		docker run -d --name dot_opendistro -e PROVIDER_ELASTICSEARCH_HEAP_SIZE=1500m -e PROVIDER_ELASTICSEARCH_DNSNAMES=elasticsearch -e ES_ADMIN_PASSWORD=%OPEN_DISTRO_PASSWORD% -e discovery.type=single-node -p 9200:9200 gcr.io/cicd-246518/es-open-distro:1.2.0
+
+		IF NOT "!ERRORLEVEL!"=="0" (
+			echo.
+			echo %OPEN_DISTRO_FAILED_DOCKER_MESSAGE%
+			echo.
+			GOTO OpenDistroEnd
+		)
+
+		rem let's get the health of Open Distro after starting it up
+		:LoopStart
+		for /f %%i in ('%~dp0/curl-7.68.0-win64/bin/curl "%ELASTICSEARCH_HOST%:%ELASTICSEARCH_PORT%/_cat/health?h=status" -u %OPEN_DISTRO_USER%:%OPEN_DISTRO_PASSWORD% --insecure') do set health_check=%%i
+		IF "!health_check!"=="yellow" GOTO LoopEnd
+		IF "!health_check!"=="green" GOTO LoopEnd
+		echo Elastic Search is unavailable - waiting
+		TIMEOUT 15
+		GOTO LoopStart
+		:LoopEnd
+		rem Open Distro ready! 	
+	)
+
+)
+:OpenDistroEnd
+
 rem Executing Tomcat
 cd %CATALINA_HOME%\bin
 call "%EXECUTABLE%" start %CMD_LINE_ARGS%
