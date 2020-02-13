@@ -172,7 +172,7 @@ if [ "$SKIP_OPEN_DISTRO" = false ] ; then
 
         until ([ "$health_check" = 'yellow' ] || [ "$health_check" = 'green' ]); do
             health_check="$(curl "$OPEN_DISTRO_HOST:$OPEN_DISTRO_PORT/_cat/health?h=status" -u $OPEN_DISTRO_USER:$OPEN_DISTRO_PASSWORD --insecure)"
-            >&2 echo "Elastic Search is unavailable - waiting"
+            >&2 echo "Elastic Search is not yet ready. This is normal - Please wait"
             sleep 15
         done
 
