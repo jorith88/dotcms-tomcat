@@ -139,7 +139,7 @@ if "!SKIP_OPEN_DISTRO!"=="false" (
 		for /f %%i in ('%~dp0/curl-7.68.0-win64/bin/curl "%ELASTICSEARCH_HOST%:%ELASTICSEARCH_PORT%/_cat/health?h=status" -u %OPEN_DISTRO_USER%:%OPEN_DISTRO_PASSWORD% --insecure') do set health_check=%%i
 		IF "!health_check!"=="yellow" GOTO LoopEnd
 		IF "!health_check!"=="green" GOTO LoopEnd
-		echo Elastic Search is not yet ready. This is normal - Please wait
+		echo Open Distro is not yet ready. This is normal - Please wait
 		TIMEOUT 15
 		GOTO LoopStart
 		:LoopEnd
