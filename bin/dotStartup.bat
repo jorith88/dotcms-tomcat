@@ -125,7 +125,7 @@ if "!SKIP_OPEN_DISTRO!"=="false" (
 		echo Launching Open Distro...
 
 		rem Launching Open Distro...
-		docker start dot_opendistro || docker run -d --name dot_opendistro -e PROVIDER_ELASTICSEARCH_HEAP_SIZE=1500m -e PROVIDER_ELASTICSEARCH_DNSNAMES=elasticsearch -e ES_ADMIN_PASSWORD=%OPEN_DISTRO_PASSWORD% -e discovery.type=single-node -p 9200:9200 gcr.io/cicd-246518/es-open-distro:1.3.0
+		docker start dot_opendistro || docker run -d --name dot_opendistro --mount source=esdata,target=/data -e PROVIDER_ELASTICSEARCH_HEAP_SIZE=1500m -e PROVIDER_ELASTICSEARCH_DNSNAMES=elasticsearch -e ES_ADMIN_PASSWORD=%OPEN_DISTRO_PASSWORD% -e discovery.type=single-node -p 9200:9200 gcr.io/cicd-246518/es-open-distro:1.3.0
 
 		IF NOT "!ERRORLEVEL!"=="0" (
 			echo.
