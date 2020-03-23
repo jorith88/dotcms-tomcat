@@ -86,7 +86,6 @@ for %%x in (%*) do (
 if "!BRING_DOWN_OPEN_DISTRO!"=="true" (
 	echo Bringing down Open Distro
 	docker stop dot_opendistro
-    docker container rm dot_opendistro
 )
 
 

@@ -122,7 +122,6 @@ done
 if [ "$BRING_DOWN_OPEN_DISTRO" = true ] ; then
     echo "Bringing down Open Distro"
     docker stop dot_opendistro
-    docker container rm dot_opendistro
 fi
 
 if [ -z $1 ]; then
