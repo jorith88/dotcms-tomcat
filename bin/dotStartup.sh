@@ -147,7 +147,7 @@ if [ "$SKIP_OPEN_DISTRO" = false ] ; then
 
     echo "Launching Open Distro..."
 
-    health_check="$(curl "$OPEN_DISTRO_HOST:$OPEN_DISTRO_PORT/_cat/health?h=status" -u $OPEN_DISTRO_USER:$OPEN_DISTRO_PASSWORD --insecure)"
+    health_check="$(curl -s "$OPEN_DISTRO_HOST:$OPEN_DISTRO_PORT/_cat/health?h=status" -u $OPEN_DISTRO_USER:$OPEN_DISTRO_PASSWORD --insecure)"
     if [ "$health_check" = 'yellow' ] || [ "$health_check" = 'green' ]; then
       OPEN_DISTRO_ALREADY_RUNNING=true;
     fi
@@ -168,10 +168,10 @@ if [ "$SKIP_OPEN_DISTRO" = false ] ; then
 
         # Wait for heathy ElasticSearch
         # next wait for ES status to turn to Green or Yellow
-        health_check="$(curl "$OPEN_DISTRO_HOST:$OPEN_DISTRO_PORT/_cat/health?h=status" -u $OPEN_DISTRO_USER:$OPEN_DISTRO_PASSWORD --insecure)"
+        health_check="$(curl -s "$OPEN_DISTRO_HOST:$OPEN_DISTRO_PORT/_cat/health?h=status" -u $OPEN_DISTRO_USER:$OPEN_DISTRO_PASSWORD --insecure)"
 
         until ([ "$health_check" = 'yellow' ] || [ "$health_check" = 'green' ]); do
-            health_check="$(curl "$OPEN_DISTRO_HOST:$OPEN_DISTRO_PORT/_cat/health?h=status" -u $OPEN_DISTRO_USER:$OPEN_DISTRO_PASSWORD --insecure)"
+            health_check="$(curl -s "$OPEN_DISTRO_HOST:$OPEN_DISTRO_PORT/_cat/health?h=status" -u $OPEN_DISTRO_USER:$OPEN_DISTRO_PASSWORD --insecure)"
             >&2 echo "Open Distro is not yet ready. This is normal - Please wait"
             sleep 15
         done
