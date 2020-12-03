@@ -156,7 +156,7 @@ if [ "$SKIP_OPEN_DISTRO" = false ] ; then
 
     if [ "$OPEN_DISTRO_ALREADY_RUNNING" = false ] ; then
         ## Bring up Open Distro
-        docker start dot_opendistro || docker run -d --name dot_opendistro --mount source=esdata,target=/data -e PROVIDER_ELASTICSEARCH_HEAP_SIZE=1500m -e PROVIDER_ELASTICSEARCH_DNSNAMES=elasticsearch -e ES_ADMIN_PASSWORD=$OPEN_DISTRO_PASSWORD -e discovery.type=single-node -p $OPEN_DISTRO_PORT:9200 gcr.io/cicd-246518/es-open-distro:1.3.0
+        docker start dot_opendistro || docker run -d --name dot_opendistro --mount source=esdata,target=/data -e PROVIDER_ELASTICSEARCH_HEAP_SIZE=1500m -e PROVIDER_ELASTICSEARCH_DNSNAMES=elasticsearch -e ES_ADMIN_PASSWORD=$OPEN_DISTRO_PASSWORD -e discovery.type=single-node -p $OPEN_DISTRO_PORT:9200 dotcms/es-open-distro:1.3.0
          ## Let's check the exit code of docker run
         docker_exit_code="$(echo $?)"
         echo "$docker_exit_code"
