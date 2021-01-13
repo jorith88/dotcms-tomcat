@@ -124,6 +124,64 @@ your dotCMS application."
         fi
 fi
 
+## check for open-distro arguments 
+SKIP_OPEN_DISTRO=false
+
+for o in "$@"; do
+  if [ $o = "--skipOpendistro" ]; then
+    SKIP_OPEN_DISTRO=true
+    echo "Not launching Open Distro"
+    break
+  fi
+done
+
+if [ "$SKIP_OPEN_DISTRO" = false ] ; then
+
+    # Code for bringing Open Distro up if needed/specified
+    OPEN_DISTRO_HOST=https://127.0.0.1
+    OPEN_DISTRO_PORT=9200
+    OPEN_DISTRO_ALREADY_RUNNING=false
+    OPEN_DISTRO_USER=admin
+    OPEN_DISTRO_PASSWORD=admin
+    OPEN_DISTRO_FAILED_DOCKER_MESSAGE="Unable to start the Elasticsearch docker container, please make sure you either start Elasticseach before you start dotCMS or have docker available so dotCMS can start the Elasticseach docker container"
+
+    echo "Launching Open Distro..."
+
+    health_check="$(curl -s "$OPEN_DISTRO_HOST:$OPEN_DISTRO_PORT/_cat/health?h=status" -u $OPEN_DISTRO_USER:$OPEN_DISTRO_PASSWORD --insecure)"
+    if [ "$health_check" = 'yellow' ] || [ "$health_check" = 'green' ]; then
+      OPEN_DISTRO_ALREADY_RUNNING=true;
+    fi
+
+    echo "Is Open Distro already running? = $OPEN_DISTRO_ALREADY_RUNNING"
+
+    if [ "$OPEN_DISTRO_ALREADY_RUNNING" = false ] ; then
+        ## Bring up Open Distro
+        docker start dot_opendistro || docker run -d --name dot_opendistro --mount source=esdata,target=/data -e PROVIDER_ELASTICSEARCH_HEAP_SIZE=1500m -e PROVIDER_ELASTICSEARCH_DNSNAMES=elasticsearch -e ES_ADMIN_PASSWORD=$OPEN_DISTRO_PASSWORD -e discovery.type=single-node -p $OPEN_DISTRO_PORT:9200 dotcms/es-open-distro:1.3.0
+         ## Let's check the exit code of docker run
+        docker_exit_code="$(echo $?)"
+        echo "$docker_exit_code"
+        if [ "$docker_exit_code" -gt 0 ] ; then 
+            echo 
+            echo "\033[1m$OPEN_DISTRO_FAILED_DOCKER_MESSAGE\033[0m"
+            echo
+        fi
+
+        # Wait for heathy ElasticSearch
+        # next wait for ES status to turn to Green or Yellow
+        health_check="$(curl -s "$OPEN_DISTRO_HOST:$OPEN_DISTRO_PORT/_cat/health?h=status" -u $OPEN_DISTRO_USER:$OPEN_DISTRO_PASSWORD --insecure)"
+
+        until ([ "$health_check" = 'yellow' ] || [ "$health_check" = 'green' ]); do
+            health_check="$(curl -s "$OPEN_DISTRO_HOST:$OPEN_DISTRO_PORT/_cat/health?h=status" -u $OPEN_DISTRO_USER:$OPEN_DISTRO_PASSWORD --insecure)"
+            >&2 echo "Open Distro is not yet ready. This is normal - Please wait"
+            sleep 15
+        done
+
+        ## Open Distro ready
+        echo "Open Distro ready!"
+    fi
+
+fi
+
 echo "Using DOTCMS_HOME = $DOTCMS_HOME"
 echo "Using DOTSERVER = $DOTSERVER"
 echo "Using CATALINA_PID = $CATALINA_PID"
