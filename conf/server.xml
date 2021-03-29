@@ -10,7 +10,7 @@
     <Executor 
           name="tomcatConnectorThreadPool" 
           namePrefix="ConnectorThreadPool-"
-          maxThreads="300" 
+          maxThreads="600" 
           minSpareThreads="25" 
     />
 
