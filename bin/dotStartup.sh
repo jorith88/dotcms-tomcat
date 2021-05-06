@@ -57,7 +57,24 @@ DOTCMS_HOME=`cd "$PRGDIR/../$HOME_FOLDER" ; pwd`
 #JAVA_OPTS="-agentpath:/Applications/YourKit_Java_Profiler_9.0.5.app/bin/mac/libyjpagent.jnilib $JAVA_OPTS -Djava.awt.headless=true -Xverify:none -Dfile.encoding=UTF8 -server -Xms1024M -Xmx1024M -XX:PermSize=128m "
 
 #JAVA_OPTS="$JAVA_OPTS -Xdebug -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n"
-JAVA_OPTS="$JAVA_OPTS -Djava.awt.headless=true -Xverify:none -Dfile.encoding=UTF8 -server -Xmx1G -XX:MaxPermSize=256m -XX:+DisableExplicitGC -XX:+UseConcMarkSweepGC -javaagent:$DOTCMS_HOME/WEB-INF/lib/byte-buddy-agent-1.9.0.jar -Dsun.jnu.encoding=UTF-8"
+
+JAVA_VERSION="$(java -version 2>&1 | grep -i version | cut -d'"' -f2 | cut -d'.' -f1-2)"
+
+echo "JAVA_VERSION: $JAVA_VERSION"
+BYTE_BUDDY_VERSION="1.9.0"
+
+# Lexicographic comparation
+if [[ (($JAVA_VERSION < 11.0)) ]]; then 
+  BYTE_BUDDY_VERSION="1.6.12";
+fi
+
+echo "Using BYTE_BUDDY_VERSION: $BYTE_BUDDY_VERSION"
+
+rm $DOTCMS_HOME/WEB-INF/lib/byte-buddy-*
+cp $DOTCMS_HOME/../../bin/byte-buddy/$BYTE_BUDDY_VERSION/* $DOTCMS_HOME/WEB-INF/lib/
+
+
+JAVA_OPTS="$JAVA_OPTS -Djava.awt.headless=true -Xverify:none -Dfile.encoding=UTF8 -server -Xmx1G -XX:MaxPermSize=256m -XX:+DisableExplicitGC -XX:+UseConcMarkSweepGC -javaagent:$DOTCMS_HOME/WEB-INF/lib/byte-buddy-agent-$BYTE_BUDDY_VERSION.jar -Dsun.jnu.encoding=UTF-8"
 
 if [ "$1" = "debug" ] ; then
 
