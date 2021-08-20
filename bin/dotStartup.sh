@@ -74,7 +74,7 @@ rm $DOTCMS_HOME/WEB-INF/lib/byte-buddy-*
 cp $DOTCMS_HOME/../../bin/byte-buddy/$BYTE_BUDDY_VERSION/* $DOTCMS_HOME/WEB-INF/lib/
 
 
-JAVA_OPTS="$JAVA_OPTS -Djava.awt.headless=true -Xverify:none -Dfile.encoding=UTF8 -server -Xmx1G -XX:MaxPermSize=256m -XX:+DisableExplicitGC -XX:+UseConcMarkSweepGC -javaagent:$DOTCMS_HOME/WEB-INF/lib/byte-buddy-agent-$BYTE_BUDDY_VERSION.jar -Dsun.jnu.encoding=UTF-8"
+JAVA_OPTS="$JAVA_OPTS -Djava.awt.headless=true -Xverify:none -Dfile.encoding=UTF8 -server -Xmx1G -XX:+DisableExplicitGC -javaagent:$DOTCMS_HOME/WEB-INF/lib/byte-buddy-agent-$BYTE_BUDDY_VERSION.jar -Dsun.jnu.encoding=UTF-8"
 
 if [ "$1" = "debug" ] ; then
 
