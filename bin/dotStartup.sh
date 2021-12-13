@@ -54,7 +54,7 @@ DOTCMS_HOME=`cd "$PRGDIR/../$HOME_FOLDER" ; pwd`
 #JAVA_OPTS="$JAVA_OPTS -Dcom.sun.management.jmxremote.port=7788 -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false "
 
 ##add agentpath to be enable ability to profile application
-#JAVA_OPTS="-agentpath:/Applications/YourKit_Java_Profiler_9.0.5.app/bin/mac/libyjpagent.jnilib $JAVA_OPTS -Djava.awt.headless=true -Xverify:none -Dfile.encoding=UTF8 -server -Xms1024M -Xmx1024M -XX:PermSize=128m "
+#JAVA_OPTS="-agentpath:/Applications/YourKit_Java_Profiler_9.0.5.app/bin/mac/libyjpagent.jnilib $JAVA_OPTS -Djava.awt.headless=true -Xverify:none -Dfile.encoding=UTF8 -server -Xms1024M -Xmx1024M -XX:PermSize=128m -Dlog4j2.formatMsgNoLookups=true "
 
 #JAVA_OPTS="$JAVA_OPTS -Xdebug -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n"
 
@@ -74,7 +74,7 @@ rm $DOTCMS_HOME/WEB-INF/lib/byte-buddy-*
 cp $DOTCMS_HOME/../../bin/byte-buddy/$BYTE_BUDDY_VERSION/* $DOTCMS_HOME/WEB-INF/lib/
 
 
-JAVA_OPTS="$JAVA_OPTS -Djava.awt.headless=true -Xverify:none -Dfile.encoding=UTF8 -server -Xmx1G -XX:+DisableExplicitGC -javaagent:$DOTCMS_HOME/WEB-INF/lib/byte-buddy-agent-$BYTE_BUDDY_VERSION.jar -Dsun.jnu.encoding=UTF-8"
+JAVA_OPTS="$JAVA_OPTS -Djava.awt.headless=true -Xverify:none -Dfile.encoding=UTF8 -server -Xmx1G -XX:+DisableExplicitGC -javaagent:$DOTCMS_HOME/WEB-INF/lib/byte-buddy-agent-$BYTE_BUDDY_VERSION.jar -Dsun.jnu.encoding=UTF-8 -Dlog4j2.formatMsgNoLookups=true "
 
 if [ "$1" = "debug" ] ; then
 
