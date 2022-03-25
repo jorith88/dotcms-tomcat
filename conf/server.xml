@@ -5,9 +5,9 @@
   <Listener className="org.apache.catalina.core.AprLifecycleListener" SSLEngine="on" />
   <Listener className="org.apache.catalina.mbeans.GlobalResourcesLifecycleListener" />
 
-    <Service name="Catalina">
-
-    <Executor 
+  <Service name="Catalina">
+  
+  <Executor 
           name="tomcatConnectorThreadPool" 
           namePrefix="ConnectorThreadPool-"
           maxThreads="300" 
@@ -57,21 +57,20 @@
           keystoreFile="conf/server.keystore" 
           keystorePass="dotcms"
       />
-
-
+      
     <Engine name="Catalina" defaultHost="localhost">
 
       <Host name="localhost"  appBase="webapps">
        <!-- The remote IP valve picks up the X-FORWARDED-FOR header and uses it as the source ip -->     
        <Valve className="org.apache.catalina.valves.RemoteIpValve" remoteIpHeader="x-forwarded-for" proxiesHeader="x-forwarded-by" protocolHeader="x-forwarded-proto" />
-        
-      <!-- Access log processes all example.
-            Documentation at: /docs/config/valve.html
-            Note: The pattern used is equivalent to using pattern="common" -->
+    
 
-      <Valve className="org.apache.catalina.valves.AccessLogValve" directory="logs"
-              prefix="dotcms_access" suffix=".log"
-              pattern="%h %l %u %t %r %H %v%U%q %s %b %{Referer}i %{User-Agent}i" />
+        <!-- Access log processes all example.
+             Documentation at: /docs/config/valve.html
+             Note: The pattern used is equivalent to using pattern="common" -->
+        <Valve className="org.apache.catalina.valves.AccessLogValve" directory="logs"
+               prefix="dotcms_access" suffix=".log"
+               pattern="%h %l %u %t %r %H %v%U%q %s %b %{Referer}i %{User-Agent}i" />
 
       </Host>
     </Engine>
