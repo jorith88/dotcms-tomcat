@@ -9,7 +9,8 @@ List of changes to the default tomcat configuration:
         /bin/build.conf.bat
         .gitignore
         /lib/ContextPropertyDecoder.jar
-    
+        /conf/server.keystore
+	
     2. Removed:
         Content inside /webapps		
     
@@ -26,4 +27,6 @@ List of changes to the default tomcat configuration:
 
 	/bin/build.conf
 		Change #SERVER_FOLDER=dotserver/tomcat-{new version of tomcat}
+		
+    
     
