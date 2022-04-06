@@ -23,7 +23,7 @@ List of changes to the default tomcat configuration:
 	
 	/conf/catalina.properties
 		Added org.apache.tomcat.util.digester.PROPERTY_SOURCE=com.dotcms.tomcat.context.TomcatPropertyDecoder
-        Added jcifs.jar to the tomcat.util.scan.StandardJarScanFilter.jarsToSkip property
+        	Added jcifs.jar to the tomcat.util.scan.StandardJarScanFilter.jarsToSkip property
 
 	/bin/build.conf
 		Change #SERVER_FOLDER=dotserver/tomcat-{new version of tomcat}
