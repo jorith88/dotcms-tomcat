@@ -7,6 +7,7 @@ List of changes to the default tomcat configuration:
         /bin/dotShutdown.bat
         /bin/build.conf
         /bin/build.conf.bat
+	/bin/byte-buddy folder
         .gitignore
         /lib/ContextPropertyDecoder.jar
 	/conf/server.keystore
