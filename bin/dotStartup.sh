@@ -60,6 +60,8 @@ DOTCMS_HOME=`cd "$PRGDIR/../$HOME_FOLDER" ; pwd`
 
 JAVA_VERSION="$(java -version 2>&1 | grep -i version | cut -d'"' -f2 | cut -d'.' -f1-2)"
 
+JAVA_OPTS="$JAVA_OPTS -Djava.awt.headless=true -Xverify:none -Dfile.encoding=UTF8 -server -Xmx1G -XX:MaxPermSize=256m -XX:+DisableExplicitGC -XX:+UseConcMarkSweepGC -Dsun.jnu.encoding=UTF-8"
+
 if [ "$1" = "debug" ] ; then
 
     DEBUG_PORT="8000"
