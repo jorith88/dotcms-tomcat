@@ -63,6 +63,8 @@
        <!-- The remote IP valve picks up the X-FORWARDED-FOR header and uses it as the source ip -->     
        <Valve className="org.apache.catalina.valves.RemoteIpValve" remoteIpHeader="x-forwarded-for" proxiesHeader="x-forwarded-by" protocolHeader="x-forwarded-proto" />
     
+       <!-- Do not show server details up on BadRequest -->
+       <Valve className="org.apache.catalina.valves.ErrorReportValve" showReport="false" showServerInfo="false"/>
 
         <!-- Access log processes all example.
              Documentation at: /docs/config/valve.html
