@@ -129,12 +129,11 @@
             prefix="dotcms_access" 
             suffix=".log"
             pattern="%{Host}i %{org.apache.catalina.AccessLog.RemoteAddr}r %l %u %t &quot;%r&quot; %s %b %D %{Referer}i %{User-Agent}i" 
-            fileDateFormat="${CMS_ACCESSLOG_FILEDATEFORMAT}"
-            maxDays="${CMS_ACCESSLOG_MAXDAYS}"
+            fileDateFormat=".yyyy-MM-dd"
+            maxDays="200"
         />
 
       </Host>
     </Engine>
   </Service>
 </Server>
-
