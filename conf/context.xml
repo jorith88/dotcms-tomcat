@@ -28,4 +28,9 @@
     <!--
     <Manager pathname="" />
     -->
+    <!-- Uncomment this to enable Redis Session Management for Tomcat -->
+    <!--
+    <Valve className="tomcat.request.session.redis.SessionHandlerValve" />
+	<Manager className="tomcat.request.session.redis.SessionManager" />
+	-->
 </Context>
