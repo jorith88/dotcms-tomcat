@@ -30,7 +30,7 @@
     -->
     <!-- Uncomment this to enable Redis Session Management for Tomcat -->
     <!--
-    <Valve className="com.dotcms.tomcat.redissessions.RedisSessionHandlerValve" />
-	<Manager className="com.dotcms.tomcat.redissessions.RedisSessionManager" />
+    <Valve className="com.orangefunction.tomcat.redissessions.RedisSessionHandlerValve" />
+	<Manager className="com.orangefunction.tomcat.redissessions.RedisSessionManager" />
 	-->
 </Context>
