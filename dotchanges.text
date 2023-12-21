@@ -1,31 +1,45 @@
 List of changes to the default tomcat configuration:
 
     1. Added:
-        /bin/dotStartup.sh
-        /bin/dotStartup.bat
-        /bin/dotShutdown.sh
-        /bin/dotShutdown.bat
-        /bin/build.conf
-        /bin/build.conf.bat
-	/bin/byte-buddy folder
-        .gitignore
-        /lib/ContextPropertyDecoder.jar
-	/conf/server.keystore
-    
+    	1.1 Files:
+	    	.gitignore
+			/bin/dotStartup.sh
+			/bin/dotStartup.bat
+			/bin/dotShutdown.sh
+			/bin/dotShutdown.bat
+			/bin/build.conf
+			/bin/build.conf.bat
+			/conf/local.dotcms.site.pem
+			/lib/ContextPropertyDecoder.jar
+		1.2. Folders:
+			/bin/byte-buddy/
+
+
     2. Removed:
-        Content inside /webapps		
+        All contents inside the /webapps/ folder
     
 
-    3. Modified: 	
-	/conf/server.xml
-        	Commented the AJP connector
-        	Modified the valve configuration
-		Added to the Connector URIEncoding="UTF-8"
+    3. Modified:
+		/conf/context.xml
+				In XML comments, add the tags to set up the Tomcat Redis Session Manager plugin:
+			
+				<!-- Uncomment this to enable Redis Session Management for Tomcat -->
+				<!--
+				<Valve className="com.dotcms.tomcat.redissessions.RedisSessionHandlerValve" />
+				<Manager className="com.dotcms.tomcat.redissessions.RedisSessionManager" />
+				-->
 	
-	/conf/catalina.properties
-		Added org.apache.tomcat.util.digester.PROPERTY_SOURCE=com.dotcms.tomcat.context.TomcatPropertyDecoder
-        Added jcifs.jar to the tomcat.util.scan.StandardJarScanFilter.jarsToSkip property
+		/conf/server.xml
+				Removed the AJP connector
+				Modified the valve configuration
+				Updated the <Connector> properties for both HTTP and HTTPS, including the URIEncoding="UTF-8"
+				Removed almost all XML comments
+	
+		/conf/catalina.properties
+			For the tomcat.util.scan.StandardJarScanFilter.jarsToSkip property, we're ignoring all JARs
+			tomcat.util.scan.StandardJarScanFilter.jarsToScan property, we're scanning a few of our JARs
+			Removed the org.apache.el.GET_CLASSLOADER_USE_PRIVILEGED property
+			Added org.apache.tomcat.util.digester.PROPERTY_SOURCE=com.dotcms.tomcat.context.TomcatPropertyDecoder
 
-	/bin/build.conf
-		Change #SERVER_FOLDER=dotserver/tomcat-{new version of tomcat}
-    
+		/bin/build.conf
+			Change the following property: #SERVER_FOLDER=dotserver/tomcat-{new version of tomcat} matching the updated Tomcat version
